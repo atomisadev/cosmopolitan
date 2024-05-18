@@ -1,28 +1,28 @@
 
 
-export async function nearestRecyclingCenter(){
+export async function nearestRecyclingCenter(address: string){
 const res = await fetch(
     `https://places.googleapis.com/v1/places:searchText`,
     {
       method: "POST",
       body: JSON.stringify({
-        textQuery: "11 Jarman Place nj",
+        textQuery: "recycling centers near "+address,
         languageCode: "en",
       }),
       headers: {
-        "X-Goog-Api-Key": process.env.NEXT_PUBLIC_MAPS_KEY,
+        "X-Goog-Api-Key": process.env.NEXT_PUBLIC_MAPS_KEY as string,
         "X-Goog-FieldMask":
           "places.displayName,places.formattedAddress,places.id,places.internationalPhoneNumber,places.websiteUri",
-        "Content-Type": "application/json",
+        // "Content-Type": "application/json",
       },
     }
   );
-
   if (!res.ok) {
     let message;
     try {
-      const json = await res.json();
+     const json = await res.json();
       message = json.error.message;
+
     } catch (e) {
       message =
         "Unable to parse error message: Google did not return a JSON response.";
@@ -31,24 +31,9 @@ const res = await fetch(
       `Got ${res.status}: ${res.statusText} error from Google Places API: ${message}`
     );
   }
-
   const json = await res.json();
-
-  const results =
-    json?.places?.map(
-      (place: {
-        id?: string;
-        internationalPhoneNumber?: string;
-        formattedAddress?: string;
-        websiteUri?: string;
-        displayName?: { text?: string };
-      }) => ({
-        name: place.displayName?.text,
-        id: place.id,
-        address: place.formattedAddress,
-        phoneNumber: place.internationalPhoneNumber,
-        website: place.websiteUri,
-      })
-    ) ?? [];
-  return JSON.stringify(results);
+  if(json.places.length==0){
+    throw new Error("No nearby recycling centers.")
+  }
+  return JSON.stringify(json.places[0].formattedAddress);
 }
