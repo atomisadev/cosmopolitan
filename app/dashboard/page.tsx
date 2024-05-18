@@ -72,11 +72,11 @@ export default function Dashboard() {
         flattenedCoordinates.forEach((coord: any) => {
           bounds.extend(coord as [number, number]);
         });
-        map.current?.fitBounds(bounds, { padding: 150 });
+        // map.current?.fitBounds(bounds, { padding: 150 });
 
-        const lineDistance = length(lineFeature);
-        const duration = lineDistance * 30;
-        const numPoints = 500;
+        const lineDistance = length(lineFeature).valueOf();  
+        const duration = Math.pow(lineDistance,0.85)*7.0
+        const numPoints = Math.floor(lineDistance*0.3);
         const segmentDistance = lineDistance / (numPoints - 1);
 
         const distances = Array.from(
@@ -89,7 +89,7 @@ export default function Dashboard() {
         );
 
         const easing = (t: number) =>
-          t < 0.5 ? 4 * t * t * t : (t - 1) * (2 * t - 2) * (2 * t - 2) + 1;
+          t*(1-t);
 
         let start: number | null = null;
         let pointIndex = 0;
@@ -104,16 +104,19 @@ export default function Dashboard() {
           lastUpdateTime = time;
 
           if (!start) start = time;
-          const progress = (time - start) / duration;
+          const progress = (time - lastUpdateTime) / duration;
 
-          if (progress > 1) return; // animation continued
+          if (progress > 1){ 
+            return;} // animation continued
 
           const currentIndex = Math.floor(progress * (numPoints - 1));
           const nextIndex = Math.min(currentIndex + 1, numPoints - 1);
+          console.log("current "+currentIndex);
+          console.log("next "+nextIndex);
           const currentPoint = interpolatedPoints[currentIndex];
           const nextPoint = interpolatedPoints[nextIndex];
           const t =
-            (progress - currentIndex / (numPoints - 1)) * (numPoints - 1);
+            (progress - currentIndex) / ((numPoints - 1) * (numPoints - 1));
 
           const lerpedPoint = [
             currentPoint[0] + (nextPoint[0] - currentPoint[0]) * t,
@@ -134,7 +137,8 @@ export default function Dashboard() {
 
           window.requestAnimationFrame(frame);
         };
-
+        
+    
         window.requestAnimationFrame(frame);
       } catch (error) {
         console.error("Error:", error);
@@ -150,7 +154,7 @@ export default function Dashboard() {
 
       map.current.flyTo({
         center: selectedLocation,
-        zoom: 14,
+        zoom: 9,
       });
 
       return () => {

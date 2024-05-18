@@ -8,7 +8,7 @@ export async function GET(request: NextRequest) {
     const key = process.env.REPLICATE_TOKEN as string;
     const API_URL =
       "https://api.replicate.com/v1/models/meta/meta-llama-3-70b-instruct/predictions";
-    const prompt = `What is a ${item} made out of. Nothing else, just list the materials, maximum of 2 materials. One sentence response with JUST the materials listed, no other words.`;
+    const prompt = `What is a ${item} made out of. Nothing else, just list the materials, minimum of 2 materials, maximum of 2 materials. One sentence response with JUST the materials listed separated with the word and, no other words.`;
     const prompt_template =
       "<|begin_of_text|><|start_header_id|>system<|end_header_id|>\n\nYou are a helpful assistant<|eot_id|><|start_header_id|>user<|end_header_id|>\n\n{prompt}<|eot_id|><|start_header_id|>assistant<|end_header_id|>\n\n";
 
