@@ -55,9 +55,7 @@ export default function Dashboard() {
     }
 
     try {
-      const response = await axios.get(
-        `/api/isRecyclable?items=${materials}`
-      );
+      const response = await axios.get(`/api/isRecyclable?items=${materials}`);
       setRecyclable(response.data);
     } catch (error) {
       console.error(error);
@@ -66,7 +64,6 @@ export default function Dashboard() {
 
     setLoading(false);
   };
-
 
   const generateNewItems = async () => {
     setNewItemsLoading(true);
@@ -92,58 +89,79 @@ export default function Dashboard() {
           selectedLocation[0],
           apiKey
         );
-        console.log(address)
+        console.log(address);
 
         if (address) {
-          const recyclingCenterAddress = await nearestRecyclingCenter(address);
-          const recyclingCenter = await geocodeAddress(recyclingCenterAddress, apiKey);
-          const randomPoints = [];
-          while (randomPoints.length < 4) {
-            const lat = selectedLocation[1] + (Math.random() * 6 - 2.5);
-            const lng = selectedLocation[0] + (Math.random() * 5 - 2.5);
-            const pointAddress = await reverseGeocodeCoordinates(lat, lng, apiKey);
-
-            if (pointAddress && !pointAddress.includes("Ocean") && !pointAddress.includes("Sea")) {
-              randomPoints.push([lng, lat]);
-            }
-          }
-          console.log(randomPoints);
-
-          const coordinates = [
-            selectedLocation,
-            [parseFloat(recyclingCenter.longitude), parseFloat(recyclingCenter.latitude)],
-            ...randomPoints,
-          ];
-          // console.log(coordinates[0]);
-          // console.log(coordinates[1]);
-          // console.log(coordintaes[2]);
-
-          const lineFeature = lineString(coordinates);
-          console.log("Line feature coordinates:", lineFeature.geometry.coordinates);
-
-          if (map.current?.getSource("lines")) {
-            (map.current?.getSource("lines") as mapboxgl.GeoJSONSource).setData(
-              lineFeature
+          if (recyclable[0] || recyclable[1]) {
+            const recyclingCenterAddress = await nearestRecyclingCenter(
+              address
             );
-          } else {
-            map.current?.addSource("lines", {
-              type: "geojson",
-              data: lineFeature,
-            });
+            const recyclingCenter = await geocodeAddress(
+              recyclingCenterAddress,
+              apiKey
+            );
+            const randomPoints = [];
+            while (randomPoints.length < 4) {
+              const lat = selectedLocation[1] + (Math.random() * 6 - 2.5);
+              const lng = selectedLocation[0] + (Math.random() * 5 - 2.5);
+              const pointAddress = await reverseGeocodeCoordinates(
+                lat,
+                lng,
+                apiKey
+              );
 
-            map.current?.addLayer({
-              id: "lines",
-              type: "line",
-              source: "lines",
-              layout: {
-                "line-join": "round",
-                "line-cap": "round",
-              },
-              paint: {
-                "line-color": "#888",
-                "line-width": 4,
-              },
-            });
+              if (
+                pointAddress &&
+                !pointAddress.includes("Ocean") &&
+                !pointAddress.includes("Sea")
+              ) {
+                randomPoints.push([lng, lat]);
+              }
+            }
+            console.log(randomPoints);
+
+            const coordinates = [
+              selectedLocation,
+              [
+                parseFloat(recyclingCenter.longitude),
+                parseFloat(recyclingCenter.latitude),
+              ],
+              ...randomPoints,
+            ];
+            // console.log(coordinates[0]);
+            // console.log(coordinates[1]);
+            // console.log(coordintaes[2]);
+
+            const lineFeature = lineString(coordinates);
+            console.log(
+              "Line feature coordinates:",
+              lineFeature.geometry.coordinates
+            );
+
+            if (map.current?.getSource("lines")) {
+              (
+                map.current?.getSource("lines") as mapboxgl.GeoJSONSource
+              ).setData(lineFeature);
+            } else {
+              map.current?.addSource("lines", {
+                type: "geojson",
+                data: lineFeature,
+              });
+
+              map.current?.addLayer({
+                id: "lines",
+                type: "line",
+                source: "lines",
+                layout: {
+                  "line-join": "round",
+                  "line-cap": "round",
+                },
+                paint: {
+                  "line-color": "#33781e",
+                  "line-width": 4,
+                },
+              });
+            }
           }
         }
       }
@@ -320,6 +338,7 @@ export default function Dashboard() {
       };
     }
   }, [selectedLocation]);
+
   return (
     <>
       <main className="flex justify-between bg-[#DAF5FF] text-[#2E4C48]">
@@ -355,66 +374,52 @@ export default function Dashboard() {
               </CardContent>
             </Card>
           </div>
-          <div className="w-full">
-            <Tabs defaultValue="account" className="w-full">
-              <TabsList className="bg-[#D4FCD1] w-full">
-                <TabsTrigger value="Recyling" className="w-full">
-                  Recyling
-                </TabsTrigger>
-                <TabsTrigger value="Landfill" className="w-full">
-                  Landfill
-                </TabsTrigger>
-              </TabsList>
-              <TabsContent value="Recyling">Recyling</TabsContent>
-              <TabsContent value="Landfill">Landfill</TabsContent>
-            </Tabs>
-            <p>{distanceCounter.toFixed(2)}</p>
+          <div className="w-full p-6 bg-[#D4FCD1]">
+            <p>Total Distance: {distanceCounter.toFixed(2)}</p>
           </div>
 
           {loading ? (
-            <p>Generating</p>
+            <p>Generating...</p>
           ) : (
             materials && (
-<Card className="w-[350px]  bg-[#D4FCD1] p-10">
-
-              <CardContent>
-              <CardTitle className="text-lg">Materials</CardTitle>
-              <CardDescription>
-                  {materials}
-                </CardDescription>
-                <CardTitle className="text-lg">Recyclable</CardTitle>
-              <CardDescription >
-                  {recyclable}              
-                </CardDescription>
-                <button
-                  onClick = {generateNewItems}
-                  disabled={newItemsLoading}
-                  className="p bg-white font-semibold text-black rounded">
-                  {newItemsLoading ? "Generating..." : "Generate New Items"}
-                </button>
-                {newItems.length > 0 && (
-                <div>
-                  <h2>New Items:</h2>
-                  {newItems.map((item, index) => (
-                    <Button
-                      key={index}
-                      onClick={() => handleItemSelect(item.toString())}
-                      className="p bg-white font-semibold text-black rounded"
-                    >
-                      {
-                      item.split(":").map((x) => (
-                        <div className="bg-[#D4FCD1]">{x}</div>
+              <Card className="w-full bg-[#D4FCD1] p-10">
+                <CardContent>
+                  <CardTitle className="text-lg">Materials</CardTitle>
+                  <CardDescription>{materials}</CardDescription>
+                  <CardTitle className="text-lg">Recyclable</CardTitle>
+                  <CardDescription>{recyclable}</CardDescription>
+                  <Button
+                    onClick={generateNewItems}
+                    disabled={newItemsLoading}
+                    className="w-full bg-[#2E4C48]"
+                  >
+                    {newItemsLoading ? "Generating..." : "Generate New Items"}
+                  </Button>
+                  {newItems.length > 0 && (
+                    <div>
+                      <CardTitle className="text-lg">New Items:</CardTitle>
+                      {newItems.map((item, index) => (
+                        <ui
+                          key={index}
+                          onClick={() => handleItemSelect(item.toString())}
+                        >
+                          {item.split(":").map((x) => (
+                            <li className="bg-[#D4FCD1]">{x}</li>
+                          ))}
+                        </ui>
                       ))}
-                    </Button>
-                  ))}
-                </div>
-              )}
-              </CardContent>
-              </Card> 
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
             )
           )}
         </div>
-        <div ref={mapContainer} style={{ width: "80%", height: "100vh" }} />
+        <div
+          ref={mapContainer}
+          style={{ width: "100%", height: "100vh" }}
+          className="sticky top-0"
+        />
       </main>
     </>
   );
