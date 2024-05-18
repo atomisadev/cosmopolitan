@@ -1,0 +1,21 @@
+prediction=$(
+    curl --silent --show-error https://api.replicate.com/v1/models/meta/meta-llama-3-70b-instruct/predictions \
+			--request POST \
+    	--header "Authorization: Bearer $REPLICATE_API_TOKEN" \
+    	--header "Content-Type: application/json" \
+    	--data @- <<'EOM'
+{
+	"stream": true,
+	"input": {
+      "prompt": "Work through this problem step by step:\n\nQ: Sarah has 7 llamas. Her friend gives her 3 more trucks of llamas. Each truck has 5 llamas. How many llamas does Sarah have in total?",
+      "prompt_template": "<|begin_of_text|><|start_header_id|>system<|end_header_id|>\n\nYou are a helpful assistant<|eot_id|><|start_header_id|>user<|end_header_id|>\n\n{prompt}<|eot_id|><|start_header_id|>assistant<|end_header_id|>\n\n"
+	}
+}
+EOM
+)
+
+stream_url=$(printf "%s" "$prediction" | jq -r .urls.stream)
+
+curl --silent --show-error --no-buffer "$stream_url" \
+    --header "Accept: text/event-stream" \
+    --header "Cache-Control: no-store"
