@@ -366,11 +366,11 @@ export default function Dashboard() {
   }, [selectedLocation]);
 
   return(<> 
-    <main className="flex justify-between bg-[#FBEBC5]">
+    <main className="flex justify-between bg-[#EFE9E1]">
     <div className="flex justify-center flex-col items-center m-24 gap-10">
 
     <div>
-    <Card className="w-[350px] text-[#2E4C48] bg-[#FBEBC5] border border-[#2E4C486a]">
+    <Card className="w-[350px] text-[#2E4C48] bg-[#D3E7C0] border border-[#2E4C486a]">
     <CardHeader>
       <CardTitle>Generations</CardTitle>
       <CardDescription>some text</CardDescription>
@@ -391,7 +391,7 @@ export default function Dashboard() {
     </div>
     <div>
 <Tabs defaultValue="account" className="w-[400px]">
-  <TabsList>
+  <TabsList className="bg-[#EFE9E1]">
     <TabsTrigger value="Recyling">Recyling</TabsTrigger>
     <TabsTrigger value="Landfill">Landfill</TabsTrigger>
   </TabsList>
