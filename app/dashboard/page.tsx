@@ -259,7 +259,7 @@ export default function Dashboard() {
     <main className="flex justify-between bg-[#EEE]">
     <div className="flex justify-center items-center m-24">
 
-<Card className="w-[350px] text-[#2E4C48] bg-[#EEE] border border-[#2E4C486a]">
+<Card className="w-[350px] text-[#2E4C48] bg-[#EEE] border border-[#FBEBC5]">
 <CardHeader>
   <CardTitle>Generations</CardTitle>
   <CardDescription>some text</CardDescription>
