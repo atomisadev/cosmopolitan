@@ -364,7 +364,7 @@ export default function Dashboard() {
       };
     }
   }, [selectedLocation]);
-
+  const [color, setColor] = useState("#16a085");
   return(<> 
     <main className="flex justify-between bg-[#EFE9E1]">
     <div className="flex justify-center flex-col items-center m-24 gap-10">
@@ -389,11 +389,11 @@ export default function Dashboard() {
     </CardContent>
     </Card>
     </div>
-    <div>
-<Tabs defaultValue="account" className="w-[400px]">
-  <TabsList className="bg-[#EFE9E1]">
-    <TabsTrigger value="Recyling">Recyling</TabsTrigger>
-    <TabsTrigger value="Landfill">Landfill</TabsTrigger>
+    <div className="w-full">
+<Tabs defaultValue="account" className="w-full">
+  <TabsList className="bg-[#D3E7C0] w-full">
+    <TabsTrigger value="Recyling" className="w-full">Recyling</TabsTrigger>
+    <TabsTrigger value="Landfill" className="w-full">Landfill</TabsTrigger>
   </TabsList>
   <TabsContent value="Recyling">Recyling</TabsContent>
   <TabsContent value="Landfill">Landfill</TabsContent>
