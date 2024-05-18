@@ -8,7 +8,7 @@ export async function GET(request: NextRequest) {
     const key = process.env.REPLICATE_TOKEN as string;
     const API_URL =
       "https://api.replicate.com/v1/models/meta/meta-llama-3-70b-instruct/predictions";
-    const prompt = `Given ${item}, what other commercial items can be made out of recycled cardboard? Only provide the answer, no other words. Make sure all of the items are comma separated, and the maximum is 5.
+    const prompt = `Given ${item}, what other commercial items can be made out of recycled cardboard? Only provide the answer, no other words. Make sure all of the items are colon separated, and the maximum is 5.
     `;
     const prompt_template = "<|begin_of_text|><|start_header_id|>system<|end_header_id|>\n\nYou are a helpful assistant<|eot_id|><|start_header_id|>user<|end_header_id|>\n\n{prompt}<|eot_id|><|start_header_id|>assistant<|end_header_id|>\n\n";
 
