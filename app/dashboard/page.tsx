@@ -391,7 +391,7 @@ export default function Dashboard() {
                   <Button
                     onClick={generateNewItems}
                     disabled={newItemsLoading}
-                    className="w-full bg-[#2E4C48]"
+                    className="w-full bg-[#2E4C48] pt-2 pb-2"
                   >
                     {newItemsLoading ? "Generating..." : "Generate New Items"}
                   </Button>
@@ -399,14 +399,14 @@ export default function Dashboard() {
                     <div>
                       <CardTitle className="text-lg">New Items:</CardTitle>
                       {newItems.map((item, index) => (
-                        <ui
+                        <ul
                           key={index}
                           onClick={() => handleItemSelect(item.toString())}
                         >
                           {item.split(":").map((x) => (
                             <li className="bg-[#D4FCD1]">{x}</li>
                           ))}
-                        </ui>
+                        </ul>
                       ))}
                     </div>
                   )}
