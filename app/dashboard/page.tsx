@@ -264,7 +264,7 @@ export default function Dashboard() {
               "line-cap": "round",
             },
             paint: {
-              "line-color": "#ff0000",
+              "line-color": "#2E4C48",
               "line-width": 5,
             },
           });
@@ -372,8 +372,8 @@ export default function Dashboard() {
     <div>
     <Card className="w-[350px] text-[#2E4C48] bg-[#D3E7C0] border border-[#2E4C486a]">
     <CardHeader>
-      <CardTitle>Generations</CardTitle>
-      <CardDescription>some text</CardDescription>
+      <CardTitle>Map your item's journey</CardTitle>
+      <CardDescription className="text-xs">Can your item make it across the entire nation?</CardDescription>
     </CardHeader>
     <CardContent>
       <form onSubmit={handleSubmit}>
