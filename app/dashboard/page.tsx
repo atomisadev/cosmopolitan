@@ -4,6 +4,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { lineString } from "@turf/helpers";
 import { getCoordinatesDownriver } from "@/utils/riverUtils";
 import { geocodeAddress } from "@/utils/getRawLocation";
+import { nearestRecyclingCenter } from "@/utils/getNearRecyclingCenter";
 import mapboxgl from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 
@@ -23,6 +24,8 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { nearestLandfill } from "@/utils/getNearLandfill";
+import { reverseGeocodeCoordinates } from "@/utils/reverseGeocode";
 
 mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_TOKEN as string;
 const apiKey = process.env.NEXT_PUBLIC_MAPS_KEY as string;
@@ -82,6 +85,68 @@ export default function Dashboard() {
       const responses = await Promise.all(newItemsPromises);
       const newItemsData = responses.map((response) => response.data);
       setNewItems(newItemsData);
+
+      if (selectedLocation) {
+        const address = await reverseGeocodeCoordinates(
+          selectedLocation[1],
+          selectedLocation[0],
+          apiKey
+        );
+        console.log(address)
+
+        if (address) {
+          const recyclingCenterAddress = await nearestRecyclingCenter(address);
+          const recyclingCenter = await geocodeAddress(recyclingCenterAddress, apiKey);
+          const randomPoints = [];
+          while (randomPoints.length < 4) {
+            const lat = selectedLocation[1] + (Math.random() * 6 - 2.5);
+            const lng = selectedLocation[0] + (Math.random() * 5 - 2.5);
+            const pointAddress = await reverseGeocodeCoordinates(lat, lng, apiKey);
+
+            if (pointAddress && !pointAddress.includes("Ocean") && !pointAddress.includes("Sea")) {
+              randomPoints.push([lng, lat]);
+            }
+          }
+          console.log(randomPoints);
+
+          const coordinates = [
+            selectedLocation,
+            [parseFloat(recyclingCenter.longitude), parseFloat(recyclingCenter.latitude)],
+            ...randomPoints,
+          ];
+          // console.log(coordinates[0]);
+          // console.log(coordinates[1]);
+          // console.log(coordintaes[2]);
+
+          const lineFeature = lineString(coordinates);
+          console.log("Line feature coordinates:", lineFeature.geometry.coordinates);
+
+          if (map.current?.getSource("lines")) {
+            (map.current?.getSource("lines") as mapboxgl.GeoJSONSource).setData(
+              lineFeature
+            );
+          } else {
+            map.current?.addSource("lines", {
+              type: "geojson",
+              data: lineFeature,
+            });
+
+            map.current?.addLayer({
+              id: "lines",
+              type: "line",
+              source: "lines",
+              layout: {
+                "line-join": "round",
+                "line-cap": "round",
+              },
+              paint: {
+                "line-color": "#888",
+                "line-width": 4,
+              },
+            });
+          }
+        }
+      }
     } catch (error) {
       console.error(error);
     }
@@ -347,7 +412,7 @@ export default function Dashboard() {
               </CardContent>
               </Card> 
             )
-            )}
+          )}
         </div>
         <div ref={mapContainer} style={{ width: "80%", height: "100vh" }} />
       </main>
