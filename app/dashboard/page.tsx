@@ -106,7 +106,7 @@ export default function Dashboard() {
       container: mapContainer.current!,
       style: "mapbox://styles/mapbox/streets-v11",
       center: [-74.328, 40.487],
-      zoom: 9,
+      zoom: 8,
     });
 
     map.current.on("click", async (event: mapboxgl.MapMouseEvent) => {
@@ -164,11 +164,13 @@ export default function Dashboard() {
         flattenedCoordinates.forEach((coord: any) => {
           bounds.extend(coord as [number, number]);
         });
-        map.current?.fitBounds(bounds, { padding: 300 });
+        map.current?.fitBounds(bounds, { padding: 150 });
 
         const lineDistance = length(lineFeature).valueOf();  
         const duration = Math.pow(lineDistance,0.85)*7.0
-        const numPoints = Math.floor(lineDistance*0.3);
+        console.log(lineDistance);
+        const numPoints = Math.ceil(500000.0/lineDistance);
+        console.log(numPoints);
         const segmentDistance = lineDistance / (numPoints - 1);
 
         const distances = Array.from(
@@ -244,7 +246,7 @@ export default function Dashboard() {
 
       map.current.flyTo({
         center: selectedLocation,
-        // zoom: 12,
+        zoom: 8,
       });
 
       return () => {
