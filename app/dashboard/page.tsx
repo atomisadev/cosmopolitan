@@ -7,16 +7,25 @@ import { geocodeAddress } from "@/utils/getRawLocation";
 import mapboxgl from "mapbox-gl";
 import along from "@turf/along";
 import length from "@turf/length";
+import { SignOutButton, SignedIn, UserButton, useUser } from "@clerk/nextjs";
+import { useRouter } from "next/navigation";
 
 mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_TOKEN as string;
 const apiKey = process.env.NEXT_PUBLIC_MAPS_KEY as string;
 
 export default function Dashboard() {
+  const { isLoaded, isSignedIn } = useUser();
   const mapContainer = useRef(null);
   const map = useRef<mapboxgl.Map | null>(null);
   const [selectedLocation, setSelectedLocation] = useState<
     [number, number] | null
   >(null);
+  const router = useRouter();
+
+  if (!isLoaded || !isSignedIn) {
+    router.push("/");
+    return;
+  }
 
   useEffect(() => {
     if (map.current) return;
@@ -88,8 +97,7 @@ export default function Dashboard() {
           (distance) => along(lineFeature, distance).geometry.coordinates
         );
 
-        const easing = (t: number) =>
-          t < 0.5 ? 4 * t * t * t : (t - 1) * (2 * t - 2) * (2 * t - 2) + 1;
+        const easing = (t: number) => t * (2 - t);
 
         let start: number | null = null;
         let pointIndex = 0;
@@ -159,5 +167,17 @@ export default function Dashboard() {
     }
   }, [selectedLocation]);
 
-  return <div ref={mapContainer} style={{ width: "100%", height: "100vh" }} />;
+  return (
+    <div>
+      <div className="flex justify-between items-center p-5">
+        <h1>Cosmopolitan</h1>
+        <SignOutButton>
+          <button className="font-medium bg-red-700 hover:bg-red-500 transition ease-in duration-100 rounded-lg py-2 px-4">
+            Log out
+          </button>
+        </SignOutButton>
+      </div>
+      <div ref={mapContainer} style={{ width: "100%", height: "92vh" }} />
+    </div>
+  );
 }
