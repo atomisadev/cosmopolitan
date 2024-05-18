@@ -256,10 +256,10 @@ export default function Dashboard() {
   }, [selectedLocation]);
 
   return(<> 
-    <main className="flex justify-between">
+    <main className="flex justify-between bg-[#EEE]">
     <div className="flex justify-center items-center m-24">
 
-<Card className="w-[350px]">
+<Card className="w-[350px] text-[#2E4C48] bg-[#EEE] border border-[#2E4C486a]">
 <CardHeader>
   <CardTitle>Generations</CardTitle>
   <CardDescription>some text</CardDescription>
@@ -271,8 +271,8 @@ export default function Dashboard() {
         <Input id="name" type="text" value={selectedItem || item} onChange={(e) => setItem(e.target.value)} placeholder="Enter an item" />
       </div>
     </div>
-    <CardFooter className="flex justify-center mb-0 mt-6">
-  <Button disabled={loading} className="w-full"> {loading ? "Loading..." : "Submit"}</Button>
+    <CardFooter className="flex justify-center mb-0 mt-8 p-0">
+  <Button disabled={loading} className="w-full bg-[#2E4C48]"> {loading ? "Loading..." : "Submit"}</Button>
 </CardFooter>          
   </form>
 </CardContent>
