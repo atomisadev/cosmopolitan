@@ -22,9 +22,11 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
 mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_TOKEN as string;
 const apiKey = process.env.NEXT_PUBLIC_MAPS_KEY as string;
+let attempt=1;
 
 export default function Dashboard() {
 
@@ -42,7 +44,7 @@ export default function Dashboard() {
 
     try {
       const response = await axios.get(
-        `/api/getMaterials?item=${selectedItem || item}`
+        `/api/getMaterials${attempt}?item=${selectedItem || item}`
       );
       setMaterials(response.data);
     } catch (error) {
@@ -51,7 +53,7 @@ export default function Dashboard() {
     }
 
     try {
-      const response = await axios.get(`/api/isRecyclable?items=${materials}`);
+      const response = await axios.get(`/api/isRecyclable${attempt}?items=${materials}`);
       setRecyclable(response.data);
     } catch (error) {
       console.error(error);
@@ -60,8 +62,20 @@ export default function Dashboard() {
 
     setLoading(false);
   };
+  const newItemHandler = async () => {
+    attempt++;
+    switch(attempt){
+      case 1: return generateNewItems1(); break;
+      case 2: return generateNewItems2(); break;
+      case 3: return generateNewItems3(); break;
+      case 4: return generateNewItems4(); break;
+      case 5: return generateNewItems5(); break;
+      default:
+        console.log(":(")
+    }
+  }
 
-  const generateNewItems = async () => {
+  const generateNewItems1 = async () => {
     setNewItemsLoading(true);
     const matArray = materials.split("and");
     const boolStrings = recyclable.toLowerCase().split(" ");
@@ -69,7 +83,103 @@ export default function Dashboard() {
 
     const newItemsPromises = matArray.map((material, index) => {
       if (isRecyclable[index]) {
-        return axios.get(`/api/generateNewItems?items=${material}`);
+        return axios.get(`/api/generateNewItems${attempt}?items=${material}`);
+      }
+      return Promise.resolve({ data: "" });
+    });
+
+    try {
+      const responses = await Promise.all(newItemsPromises);
+      const newItemsData = responses.map((response) => response.data);
+      setNewItems(newItemsData);
+    } catch (error) {
+      console.error(error);
+    }
+
+    setNewItemsLoading(false);
+  };
+  
+  const generateNewItems2 = async () => {
+    setNewItemsLoading(true);
+    const matArray = materials.split("and");
+    const boolStrings = recyclable.toLowerCase().split(" ");
+    const isRecyclable = [boolStrings[0] === "true", boolStrings[1] === "true"];
+
+    const newItemsPromises = matArray.map((material, index) => {
+      if (isRecyclable[index]) {
+        return axios.get(`/api/generateNewItems${attempt}?items=${material}`);
+      }
+      return Promise.resolve({ data: "" });
+    });
+
+    try {
+      const responses = await Promise.all(newItemsPromises);
+      const newItemsData = responses.map((response) => response.data);
+      setNewItems(newItemsData);
+    } catch (error) {
+      console.error(error);
+    }
+
+    setNewItemsLoading(false);
+  };
+
+  const generateNewItems3 = async () => {
+    setNewItemsLoading(true);
+    const matArray = materials.split("and");
+    const boolStrings = recyclable.toLowerCase().split(" ");
+    const isRecyclable = [boolStrings[0] === "true", boolStrings[1] === "true"];
+
+    const newItemsPromises = matArray.map((material, index) => {
+      if (isRecyclable[index]) {
+        return axios.get(`/api/generateNewItems${attempt}?items=${material}`);
+      }
+      return Promise.resolve({ data: "" });
+    });
+
+    try {
+      const responses = await Promise.all(newItemsPromises);
+      const newItemsData = responses.map((response) => response.data);
+      setNewItems(newItemsData);
+    } catch (error) {
+      console.error(error);
+    }
+
+    setNewItemsLoading(false);
+  };
+
+  const generateNewItems4 = async () => {
+    setNewItemsLoading(true);
+    const matArray = materials.split("and");
+    const boolStrings = recyclable.toLowerCase().split(" ");
+    const isRecyclable = [boolStrings[0] === "true", boolStrings[1] === "true"];
+
+    const newItemsPromises = matArray.map((material, index) => {
+      if (isRecyclable[index]) {
+        return axios.get(`/api/generateNewItems${attempt}?items=${material}`);
+      }
+      return Promise.resolve({ data: "" });
+    });
+
+    try {
+      const responses = await Promise.all(newItemsPromises);
+      const newItemsData = responses.map((response) => response.data);
+      setNewItems(newItemsData);
+    } catch (error) {
+      console.error(error);
+    }
+
+    setNewItemsLoading(false);
+  };
+
+  const generateNewItems5 = async () => {
+    setNewItemsLoading(true);
+    const matArray = materials.split("and");
+    const boolStrings = recyclable.toLowerCase().split(" ");
+    const isRecyclable = [boolStrings[0] === "true", boolStrings[1] === "true"];
+
+    const newItemsPromises = matArray.map((material, index) => {
+      if (isRecyclable[index]) {
+        return axios.get(`/api/generateNewItems${attempt}?items=${material}`);
       }
       return Promise.resolve({ data: "" });
     });
@@ -256,27 +366,39 @@ export default function Dashboard() {
   }, [selectedLocation]);
 
   return(<> 
-    <main className="flex justify-between bg-[#EEE]">
-    <div className="flex justify-center items-center m-24">
+    <main className="flex justify-between bg-[#FBEBC5]">
+    <div className="flex justify-center flex-col items-center m-24 gap-10">
 
-<Card className="w-[350px] text-[#2E4C48] bg-[#EEE] border border-[#FBEBC5]">
-<CardHeader>
-  <CardTitle>Generations</CardTitle>
-  <CardDescription>some text</CardDescription>
-</CardHeader>
-<CardContent>
-  <form onSubmit={handleSubmit}>
-    <div className="grid w-full items-center gap-4">
-      <div className="flex flex-col space-y-1.5">
-        <Input id="name" type="text" value={selectedItem || item} onChange={(e) => setItem(e.target.value)} placeholder="Enter an item" />
-      </div>
+    <div>
+    <Card className="w-[350px] text-[#2E4C48] bg-[#FBEBC5] border border-[#2E4C486a]">
+    <CardHeader>
+      <CardTitle>Generations</CardTitle>
+      <CardDescription>some text</CardDescription>
+    </CardHeader>
+    <CardContent>
+      <form onSubmit={handleSubmit}>
+        <div className="grid w-full items-center gap-4">
+          <div className="flex flex-col space-y-1.5">
+            <Input id="name" type="text" value={selectedItem || item} onChange={(e) => setItem(e.target.value)} placeholder="Enter an item" />
+          </div>
+        </div>
+        <CardFooter className="flex justify-center mb-0 mt-8 p-0">
+      <Button disabled={loading} className="w-full bg-[#2E4C48]"> {loading ? "Loading..." : "Submit"}</Button>
+    </CardFooter>          
+      </form>
+    </CardContent>
+    </Card>
     </div>
-    <CardFooter className="flex justify-center mb-0 mt-8 p-0">
-  <Button disabled={loading} className="w-full bg-[#2E4C48]"> {loading ? "Loading..." : "Submit"}</Button>
-</CardFooter>          
-  </form>
-</CardContent>
-</Card>
+    <div>
+<Tabs defaultValue="account" className="w-[400px]">
+  <TabsList>
+    <TabsTrigger value="Recyling">Recyling</TabsTrigger>
+    <TabsTrigger value="Landfill">Landfill</TabsTrigger>
+  </TabsList>
+  <TabsContent value="Recyling">Recyling</TabsContent>
+  <TabsContent value="Landfill">Landfill</TabsContent>
+</Tabs>  
+</div>
 
 {loading ? (
   <p>works</p>
@@ -288,7 +410,7 @@ export default function Dashboard() {
       <p>Recyclable:</p>
       <p>{recyclable}</p>
       <button
-        onClick={generateNewItems}
+        onClick={newItemHandler}
         disabled={newItemsLoading}
         className="p bg-white font-semibold text-black rounded"
       >
