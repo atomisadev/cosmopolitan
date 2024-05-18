@@ -307,17 +307,17 @@ export default function Dashboard() {
           </div>
 
           {loading ? (
-            <p>works</p>
+            <p>Generating</p>
           ) : (
             materials && (
-<Card className="w-[350px]  bg-[#D4FCD1] ">
+<Card className="w-[350px]  bg-[#D4FCD1] p-10">
 
               <CardContent>
-              <CardTitle >Materials</CardTitle>
+              <CardTitle className="text-lg">Materials</CardTitle>
               <CardDescription>
                   {materials}
                 </CardDescription>
-                <CardTitle className="text-s">Recyclable</CardTitle>
+                <CardTitle className="text-lg">Recyclable</CardTitle>
               <CardDescription >
                   {recyclable}              
                 </CardDescription>
@@ -331,15 +331,16 @@ export default function Dashboard() {
                 <div>
                   <h2>New Items:</h2>
                   {newItems.map((item, index) => (
-                    <button
+                    <Button
                       key={index}
                       onClick={() => handleItemSelect(item.toString())}
                       className="p bg-white font-semibold text-black rounded"
                     >
-                      { item + "||" + item.split(":").map((index) => (
-                        <div>{item + "|" + index}</div>
+                      {
+                      item.split(":").map((x) => (
+                        <div className="bg-[#D4FCD1]">{x}</div>
                       ))}
-                    </button>
+                    </Button>
                   ))}
                 </div>
               )}

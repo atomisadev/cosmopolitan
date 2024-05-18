@@ -70,6 +70,7 @@ export async function GET(request: NextRequest) {
     }
     let format: string = output.toString();
     format=format.replace(/,/g,"");
+    console.log(format);
     return new NextResponse(format);
   } catch (error) {
     console.error(error);
