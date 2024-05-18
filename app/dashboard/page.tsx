@@ -76,8 +76,8 @@ export default function Dashboard() {
 
         const lineDistance = length(lineFeature);
         const duration = lineDistance * 30;
-        const numPoints = 100;
-        const segmentDistance = lineDistance / numPoints;
+        const numPoints = 500;
+        const segmentDistance = lineDistance / (numPoints - 1);
 
         const distances = Array.from(
           { length: numPoints },
@@ -88,34 +88,48 @@ export default function Dashboard() {
           (distance) => along(lineFeature, distance).geometry.coordinates
         );
 
-        const easing = (t: number) => t * (2 - t);
+        const easing = (t: number) =>
+          t < 0.5 ? 4 * t * t * t : (t - 1) * (2 * t - 2) * (2 * t - 2) + 1;
 
         let start: number | null = null;
         let pointIndex = 0;
+        let lastUpdateTime = 0;
+        const throttleInterval = 10;
 
         const frame = (time: number) => {
+          if (time - lastUpdateTime < throttleInterval) {
+            window.requestAnimationFrame(frame);
+            return;
+          }
+          lastUpdateTime = time;
+
           if (!start) start = time;
           const progress = (time - start) / duration;
 
           if (progress > 1) return; // animation continued
 
           const currentIndex = Math.floor(progress * (numPoints - 1));
+          const nextIndex = Math.min(currentIndex + 1, numPoints - 1);
+          const currentPoint = interpolatedPoints[currentIndex];
+          const nextPoint = interpolatedPoints[nextIndex];
+          const t =
+            (progress - currentIndex / (numPoints - 1)) * (numPoints - 1);
 
-          if (currentIndex !== pointIndex) {
-            const currentPoint = interpolatedPoints[currentIndex];
+          const lerpedPoint = [
+            currentPoint[0] + (nextPoint[0] - currentPoint[0]) * t,
+            currentPoint[1] + (nextPoint[1] - currentPoint[1]) * t,
+          ];
 
-            if (currentPoint.length === 2) {
-              map.current?.flyTo({
-                center: currentPoint as [number, number],
-                easing: easing,
-              });
-              pointIndex = currentIndex;
-            } else {
-              console.error(
-                "Invalid coordinates for camera center:",
-                currentPoint
-              );
-            }
+          if (lerpedPoint.length === 2) {
+            map.current?.flyTo({
+              center: lerpedPoint as [number, number],
+              easing: easing,
+            });
+          } else {
+            console.error(
+              "Invalid coordinates for camera center:",
+              lerpedPoint
+            );
           }
 
           window.requestAnimationFrame(frame);
