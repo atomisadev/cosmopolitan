@@ -7,8 +7,6 @@ import { Rowdies } from "next/font/google";
 import { useEffect, useRef, useState } from 'react';
 import { motion, useScroll, useTransform } from "framer-motion";
 import "./globals.css";
-import { Parallax } from 'react-scroll-parallax';
-import { ParallaxBanner } from 'react-scroll-parallax';
 
 const font = Rowdies({ subsets: ["latin"], weight:'400' });
 
@@ -25,20 +23,20 @@ export default function Home() {
           animate={{ opacity: 1, y:0 }}
           transition={{ duration: 0.5 }} 
         >
-      <h1 className={`text-6xl tracking-wider ${font.className} text-[#2E4C48] m-28 p-12 pb-0`}>Cosmopolitan</h1>
+      <h1 className={`text-6xl tracking-wider ${font.className} text-[#2E4C48] mt-28 p-12`}>Cosmopolitan</h1>
       </motion.div>
-      <ParallaxBanner
-      layers={[
-        { image: 'carbon.svg', speed: -20 },
-      ]}
-      className="aspect-[2/1]"
-    >
-    </ParallaxBanner>
       <SignInButton>
         <button className="bg-white text-black font-medium py-2 px-4 rounded-lg hover:bg-white/80 transition ease-in-out duration-100">
-          Sign in with Clerk
+          Generate
         </button>
-      </SignInButton>
+      </SignInButton>      
+      <motion.div 
+      initial={{ opacity: 0, y:50 }}
+      animate={{ opacity: 1, y:0 }}
+      transition={{ duration: 0.5 }} 
+    >
+      <Image src="carbon.svg" alt="image" className="w-full" width={100} height={5}/>
+    </motion.div>
     </main>
 
   );

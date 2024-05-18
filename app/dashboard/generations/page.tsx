@@ -3,6 +3,18 @@
 import { useState } from "react";
 import axios from "axios";
 
+import { Button } from "@/components/ui/button"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
+import { Input } from "@/components/ui/input"
+
+
 export default function Generation() {
   const [item, setItem] = useState("");
   const [materials, setMaterials] = useState("");
@@ -70,27 +82,29 @@ export default function Generation() {
   };
 
   return (
-    <div>
-      <h1>Generations</h1>
-      <form onSubmit={handleSubmit}>
-        <input
-          type="text"
-          value={selectedItem || item}
-          onChange={(e) => setItem(e.target.value)}
-          placeholder="Enter an item"
-          className="p-2 rounded-lg bg-white/5 text-white/80 px-5"
-        />
-        <button
-          type="submit"
-          className="p bg-white font-semibold text-black rounded"
-          disabled={loading}
-        >
-          {loading ? "Loading..." : "Submit"}
-        </button>
-      </form>
+    <div className="flex justify-center items-center m-24">
+
+      <Card className="w-[350px]">
+      <CardHeader>
+        <CardTitle>Generations</CardTitle>
+        <CardDescription>some text</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <form onSubmit={handleSubmit}>
+          <div className="grid w-full items-center gap-4">
+            <div className="flex flex-col space-y-1.5">
+              <Input id="name" type="text" value={selectedItem || item} onChange={(e) => setItem(e.target.value)} placeholder="Enter an item" />
+            </div>
+          </div>
+          <CardFooter className="flex justify-center mb-0 mt-6">
+        <Button disabled={loading} className="w-full"> {loading ? "Loading..." : "Submit"}</Button>
+      </CardFooter>          
+        </form>
+      </CardContent>
+    </Card>
 
       {loading ? (
-        <p>Loading...</p>
+        <p>works</p>
       ) : (
         materials && (
           <div>
