@@ -27,6 +27,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_TOKEN as string;
 const apiKey = process.env.NEXT_PUBLIC_MAPS_KEY as string;
 let attempt=1;
+let distanceCounter=0;
 
 export default function Dashboard() {
 
@@ -366,7 +367,7 @@ export default function Dashboard() {
   }, [selectedLocation]);
   const [color, setColor] = useState("#16a085");
   return(<> 
-    <main className="flex justify-between bg-[#EFE9E1]">
+    <main className="flex justify-between bg-[#DAF5FF]">
     <div className="flex justify-center flex-col items-center m-24 gap-10">
 
     <div>

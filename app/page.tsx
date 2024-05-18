@@ -17,7 +17,7 @@ export default function Home() {
 
   return (
 
-      <main className={`flex min-h-screen flex-col items-center justify-between bg-[#EEDBB6]`}>
+      <main className={`flex min-h-screen flex-col items-center justify-between bg-[#DAF5FF]`}>
         <motion.div 
           initial={{ opacity: 0, y:-100 }}
           animate={{ opacity: 1, y:0 }}
