@@ -13,6 +13,7 @@
     "@propelauth/react": "^2.0.21",
     "@radix-ui/react-slot": "^1.0.2",
     "@radix-ui/react-tabs": "^1.0.4",
+    "@radix-ui/react-toast": "^1.1.5",
     "@turf/helpers": "^6.5.0",
     "@turf/length": "^6.5.0",
     "@turf/turf": "^6.5.0",

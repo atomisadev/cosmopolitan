@@ -5,6 +5,9 @@ import { lineString } from "@turf/helpers";
 import { getCoordinatesDownriver } from "@/utils/riverUtils";
 import { geocodeAddress } from "@/utils/getRawLocation";
 import { nearestRecyclingCenter } from "@/utils/getNearRecyclingCenter";
+import { useToast } from "@/components/ui/use-toast";
+import { Toaster } from "@/components/ui/toaster";
+
 import mapboxgl from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 
@@ -30,6 +33,7 @@ import { reverseGeocodeCoordinates } from "@/utils/reverseGeocode";
 mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_TOKEN as string;
 const apiKey = process.env.NEXT_PUBLIC_MAPS_KEY as string;
 let distanceCounter = 0;
+let recyclingCenterAddress: string | null = null;
 
 export default function Dashboard() {
   const [item, setItem] = useState("");
@@ -39,10 +43,32 @@ export default function Dashboard() {
   const [newItemsLoading, setNewItemsLoading] = useState(false);
   const [newItems, setNewItems] = useState<String[]>([]);
   const [selectedItem, setSelectedItem] = useState("");
+  const { toast } = useToast();
+  let marker: mapboxgl.Marker | null = null;
 
   const handleSubmit = async (e: any) => {
-    setLoading(true);
     e.preventDefault();
+    if (!selectedItem && !item) {
+      toast({
+        variant: "destructive",
+        title: "No item inputted ",
+        description:
+          "Please input an item into the textbox and select a location on the map, then try again.",
+      });
+      setLoading(false);
+      return null;
+    }
+
+    if (!selectedLocation) {
+      toast({
+        variant: "destructive",
+        title: "No location selected",
+        description: "Please select a location on the map, then try again.",
+      });
+      setLoading(false);
+      return null;
+    }
+    setLoading(true);
 
     try {
       const response = await axios.get(
@@ -89,13 +115,13 @@ export default function Dashboard() {
           selectedLocation[0],
           apiKey
         );
-        console.log(address);
+        // console.log(address);
 
         if (address) {
           if (recyclable[0] || recyclable[1]) {
-            const recyclingCenterAddress = await nearestRecyclingCenter(
-              address
-            );
+            recyclingCenterAddress = await nearestRecyclingCenter(address);
+            recyclingCenterAddress = recyclingCenterAddress.replace('"g', "");
+            console.log(recyclingCenterAddress);
             const recyclingCenter = await geocodeAddress(
               recyclingCenterAddress,
               apiKey
@@ -118,14 +144,11 @@ export default function Dashboard() {
                 randomPoints.push([lng, lat]);
               }
             }
-            console.log(randomPoints);
+            // console.log(randomPoints);
 
             const coordinates = [
               selectedLocation,
-              [
-                parseFloat(recyclingCenter.longitude),
-                parseFloat(recyclingCenter.latitude),
-              ],
+              [recyclingCenter.longitude, recyclingCenter.latitude],
               ...randomPoints,
             ];
             // console.log(coordinates[0]);
@@ -202,7 +225,6 @@ export default function Dashboard() {
       // if(marker!=null){
       //   marker.remove();
       // }
-      let marker = null;
       if (map.current) {
         marker = new mapboxgl.Marker()
           .setLngLat([lngLat.lng, lngLat.lat])
@@ -397,6 +419,12 @@ export default function Dashboard() {
                   </Button>
                   {newItems.length > 0 && (
                     <div>
+                      <CardTitle className="text-lg">
+                        Nearest Recycling Center:
+                      </CardTitle>
+                      <CardDescription>
+                        {recyclingCenterAddress}
+                      </CardDescription>
                       <CardTitle className="text-lg">New Items:</CardTitle>
                       {newItems.map((item, index) => (
                         <ul
