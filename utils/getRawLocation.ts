@@ -8,7 +8,7 @@ interface Coordinates {
 export async function geocodeAddress(
   address: string,
   apiKey: string
-): Promise<Coordinates | null> {
+): Promise<Coordinates> {
   const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(
     address
   )}&key=${apiKey}`;
@@ -24,10 +24,10 @@ export async function geocodeAddress(
       return { latitude, longitude };
     } else {
       console.error("Geocoding failed:", data.status);
-      return null;
+      throw new Error("Geocoding failed:", data.status);
     }
   } catch (error) {
     console.error("Geocoding error:", error);
-    return null;
+    throw new Error("Geocoding failed:");
   }
 }
