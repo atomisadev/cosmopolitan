@@ -29,6 +29,9 @@ import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { nearestLandfill } from "@/utils/getNearLandfill";
 import { reverseGeocodeCoordinates } from "@/utils/reverseGeocode";
+import { Space_Mono } from "next/font/google";
+
+const spaceMono = Space_Mono({ subsets: ["latin"], weight: "700" });
 
 mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_TOKEN as string;
 const apiKey = process.env.NEXT_PUBLIC_MAPS_KEY as string;
@@ -363,13 +366,15 @@ export default function Dashboard() {
 
   return (
     <>
-      <main className="flex justify-between bg-[#DAF5FF] text-[#2E4C48]">
+      <main className="flex justify-between bg-[#FFF9F0] text-[#2E4C48]">
         <div className="flex justify-center flex-col items-center m-24 gap-10">
           <div>
-            <Card className="w-[350px]  bg-[#D4FCD1] ">
+            <Card className="w-[350px]  bg-[#FFEBCE] ">
               <CardHeader>
-                <CardTitle>Map your item's journey</CardTitle>
-                <CardDescription className="text-xs">
+                <CardTitle className="text-[#AA5D2C] font-bold tracking-tighter">
+                  Map your trash's journey
+                </CardTitle>
+                <CardDescription className="text-xs text-[#AA5D2C]">
                   Can your item make it across the entire nation?
                 </CardDescription>
               </CardHeader>
@@ -379,60 +384,83 @@ export default function Dashboard() {
                     <div className="flex flex-col space-y-1.5">
                       <Input
                         id="name"
+                        className="bg-[#FFE5C0] border-none text-[#AA5D2C]"
                         type="text"
                         value={selectedItem || item}
                         onChange={(e) => setItem(e.target.value)}
-                        placeholder="Enter an item"
                       />
                     </div>
                   </div>
                   <CardFooter className="flex justify-center mb-0 mt-8 p-0">
-                    <Button disabled={loading} className="w-full bg-[#2E4C48]">
+                    <Button
+                      disabled={loading}
+                      className="w-full bg-[#AA5D2C] hover:bg-[#AA5D2C]/90"
+                    >
                       {" "}
-                      {loading ? "Loading..." : "Submit"}
+                      {loading ? "Loading..." : "Track Location"}
                     </Button>
                   </CardFooter>
                 </form>
               </CardContent>
             </Card>
           </div>
-          <div className="w-full p-6 bg-[#D4FCD1]">
-            <p>Total Distance: {distanceCounter.toFixed(2)}</p>
-          </div>
 
           {loading ? (
             <p>Generating...</p>
           ) : (
             materials && (
-              <Card className="w-full bg-[#D4FCD1] p-10">
+              <Card className="w-full bg-[#FFEBCE]">
+                <CardHeader>
+                  <CardTitle className="tracking-tighter font-bold text-[#AA5D2C]">
+                    What can be made with it?
+                  </CardTitle>
+                </CardHeader>
                 <CardContent>
-                  <CardTitle className="text-lg">Materials</CardTitle>
-                  <CardDescription>{materials}</CardDescription>
-                  <CardTitle className="text-lg">Recyclable</CardTitle>
-                  <CardDescription>{recyclable}</CardDescription>
+                  <div className="grid grid-cols-2 mb-6 gap-3">
+                    <div>
+                      <CardTitle className="text-lg font-semibold tracking-tighter text-[#AA5D2C]">
+                        Materials
+                      </CardTitle>
+                      <CardDescription className="text-[#AA5D2C]">
+                        {materials}
+                      </CardDescription>
+                    </div>
+                    <div>
+                      <CardTitle className="text-lg font-semibold tracking-tighter text-[#AA5D2C]">
+                        Recyclable
+                      </CardTitle>
+                      <CardDescription className="text-[#AA5D2C]">
+                        {recyclable}
+                      </CardDescription>
+                    </div>
+                  </div>
                   <Button
                     onClick={generateNewItems}
                     disabled={newItemsLoading}
-                    className="w-full bg-[#2E4C48] pt-2 pb-2"
+                    className="w-full bg-[#AA5D2C] hover:bg-[#AA5D2C]/90 pt-2 pb-2"
                   >
                     {newItemsLoading ? "Generating..." : "Generate New Items"}
                   </Button>
                   {newItems.length > 0 && (
-                    <div>
-                      <CardTitle className="text-lg">
+                    <div className="mt-5">
+                      <CardTitle className="text-lg font-semibold tracking-tighter text-[#AA5D2C]">
                         Nearest Recycling Center:
                       </CardTitle>
-                      <CardDescription>
+                      <CardDescription className="text-[#AA5D2C]">
                         {recyclingCenterAddress}
                       </CardDescription>
-                      <CardTitle className="text-lg">New Items:</CardTitle>
+                      <CardTitle className="text-lg font-semibold tracking-tighter text-[#AA5D2C]">
+                        New Items:
+                      </CardTitle>
                       {newItems.map((item, index) => (
                         <ul
                           key={index}
                           onClick={() => handleItemSelect(item.toString())}
                         >
                           {item.split(":").map((x) => (
-                            <li className="bg-[#D4FCD1]">{x}</li>
+                            <li className="text-[#AA5D2C] text-sm">
+                              {x || "asdadsdadasd"}
+                            </li>
                           ))}
                         </ul>
                       ))}
@@ -442,6 +470,14 @@ export default function Dashboard() {
               </Card>
             )
           )}
+          <div className="flex flex-col items-center">
+            <h1 className={`text-5xl text-[#AA5D2C] ${spaceMono.className}`}>
+              {distanceCounter.toFixed(2)}
+            </h1>
+            <p className="text-2xl tracking-tighter text-[#AA5D2C] font-medium">
+              km traveled
+            </p>
+          </div>
         </div>
         <div
           ref={mapContainer}
