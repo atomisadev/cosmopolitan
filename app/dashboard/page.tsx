@@ -457,8 +457,8 @@ export default function Dashboard() {
                           key={index}
                           onClick={() => handleItemSelect(item.toString())}
                         >
-                          {item.split(":").map((x) => (
-                            <li className="text-[#AA5D2C] text-sm">
+                          {item.split(":").map((x, index) => (
+                            <li key={index} className="text-[#AA5D2C] text-sm">
                               {x || "asdadsdadasd"}
                             </li>
                           ))}
